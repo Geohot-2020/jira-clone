@@ -26,6 +26,7 @@ import { useLogin } from "../api/use-login";
 
 
 export const SignInCard = () => {
+    // mutate 是从 useLogin 钩子中解构出来的一个函数
     const { mutate } = useLogin();
 
     // 自动类型推断，根据Zod模式推断出相应的ts类型
@@ -37,6 +38,7 @@ export const SignInCard = () => {
         }
     });
 
+    // 当用户提交表单时，onSubmit 函数会被调用
     const onSubmit = (values: z.infer<typeof loginSchema>) => {
         mutate({json: values});
     }
