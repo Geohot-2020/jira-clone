@@ -21,25 +21,24 @@ import {
     FormItem,
     FormMessage,
 } from "@/components/ui/form"
+import { loginSchema } from "../schemas";
+import { useLogin } from "../api/use-login";
 
-
-const formSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(1, "Required"),
-});
 
 export const SignInCard = () => {
+    const { mutate } = useLogin();
+
     // 自动类型推断，根据Zod模式推断出相应的ts类型
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof loginSchema>>({
+        resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "",
             password: "",
         }
     });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log({ values });
+    const onSubmit = (values: z.infer<typeof loginSchema>) => {
+        mutate({json: values});
     }
 
     return (
