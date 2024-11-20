@@ -6,8 +6,6 @@ import { QueryProvider } from "@/components/query-provider";
 
 import "./globals.css";
 
-
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
