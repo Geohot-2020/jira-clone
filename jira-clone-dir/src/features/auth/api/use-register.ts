@@ -9,11 +9,14 @@
  * @typedef {InferResponseType<typeof client.api.auth.login["$post"]>} ResponseType - 登录端点响应的类型。
  * @typedef {InferRequestType<typeof client.api.auth.login["$post"]>["json"]} RequestType - 登录端点请求负载的类型。
  */
+
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type ResponseType = InferResponseType<typeof client.api.auth.register["$post"]>;
 type RequestType = InferRequestType<typeof client.api.auth.register["$post"]>;
@@ -32,8 +35,12 @@ export const useRegister = () => {
             return await response.json();
         },
         onSuccess: () => {
+            toast.success("Registered");
             router.refresh();
             queryClient.invalidateQueries({queryKey: ["current"]});
+        },
+        onError: () => {
+            toast.error("Register failed");
         },
     });
 

@@ -9,6 +9,8 @@
  * @typedef {InferResponseType<typeof client.api.auth.login["$post"]>} ResponseType - 登录端点响应的类型。
  * @typedef {InferRequestType<typeof client.api.auth.login["$post"]>["json"]} RequestType - 登录端点请求负载的类型。
  */
+
+import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
@@ -28,11 +30,20 @@ export const useLogin = () => {
     >({
         mutationFn: async ({ json }) => {
             const response = await client.api.auth.login["$post"]({ json });
+
+            if (!response.ok) {
+                throw new Error("Failed to login");
+            }
+
             return await response.json();
         },
         onSuccess: () => {
+            toast.success("Logged in");
             router.refresh();
             queryClient.invalidateQueries({queryKey: ["current"]});
+        },
+        onError: () => {
+            toast.error("Failed log in");
         },
     });
 

@@ -9,11 +9,13 @@
  * @typedef {InferResponseType<typeof client.api.auth.logout["$post"]>} ResponseType - 注销端点响应的类型。
  * @typedef {InferRequestType<typeof client.api.auth.logout["$post"]>} RequestType - 注销端点请求负载的类型。
  */
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
 import { client } from "@/lib/rpc";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type ResponseType = InferResponseType<typeof client.api.auth.login["$post"]>;
 type RequestType = InferRequestType<typeof client.api.auth.login["$post"]>;
@@ -31,9 +33,13 @@ export const useLogout = () => {
             return await response.json();
         },
         onSuccess: () => {
-           router.refresh();
-           queryClient.invalidateQueries({queryKey: ["current"]});
-        }
+            toast.success("Logged out");
+            router.refresh();
+            queryClient.invalidateQueries({queryKey: ["current"]});
+        },
+        onError: () => {
+            toast.error("Failed to log out");
+        },
     });
 
     return mutation;
