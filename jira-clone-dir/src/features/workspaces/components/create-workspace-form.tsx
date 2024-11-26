@@ -23,12 +23,14 @@ import { useCreateWorkspaces } from "../api/use-create-workspace";
 import { useRef } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ImageIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface CreateWorkspaceFromProps {
     onCancel?: () => void;
 };
 
 export const CreateWorkspaceFrom = ({ onCancel }: CreateWorkspaceFromProps) => {
+    const router = useRouter();
     const { mutate, isPending } = useCreateWorkspaces();
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -47,9 +49,9 @@ export const CreateWorkspaceFrom = ({ onCancel }: CreateWorkspaceFromProps) => {
         };
 
         mutate({ form: finalValues }, {
-            onSuccess: () => {
+            onSuccess: ({ data }) => {
                 form.reset();
-                // TODO: redirect to new workspace
+                router.push(`/workspaces/${data.$id}`);
             }
         });
     };
@@ -126,7 +128,7 @@ export const CreateWorkspaceFrom = ({ onCancel }: CreateWorkspaceFromProps) => {
                                                 <p className="text-sm text-muted-foreground">
                                                     JPG, PNG, SVG or JPEG, max 1MB
                                                 </p>
-                                                <Input 
+                                                <Input
                                                     className="hidden"
                                                     type="file"
                                                     accept=".jpg, .png, .svg, .jpeg"

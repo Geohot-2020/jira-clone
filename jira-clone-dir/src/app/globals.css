@@ -76,3 +76,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* 隐藏不同浏览器中的滚动条 */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::--webkit-scrollbar {
+  display: none;
+}
