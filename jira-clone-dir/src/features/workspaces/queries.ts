@@ -10,7 +10,7 @@ import { createSessionClient } from "@/lib/appwrite";
 
 export const getWorkspaces = async () => {
     try {
-        const {databases, account} = await createSessionClient();
+        const { databases, account } = await createSessionClient();
 
         const user = await account.get();
 
@@ -45,9 +45,9 @@ interface GetWorkspaceProps {
     workspaceId: string;
 }
 
-export const getWorkspace = async ({workspaceId}: GetWorkspaceProps) => {
+export const getWorkspace = async ({ workspaceId }: GetWorkspaceProps) => {
     try {
-        const {databases, account} = await createSessionClient();
+        const { databases, account } = await createSessionClient();
         const user = await account.get();
 
         const member = await getMember({
@@ -56,7 +56,7 @@ export const getWorkspace = async ({workspaceId}: GetWorkspaceProps) => {
             workspaceId,
         });
 
-        if (!member)    return null;
+        if (!member) return null;
 
         const workspace = await databases.getDocument<Workspace>(
             DATABASE_ID,
@@ -65,6 +65,29 @@ export const getWorkspace = async ({workspaceId}: GetWorkspaceProps) => {
         );
 
         return workspace;
+    } catch (error) {
+        return null;
+    }
+};
+
+interface GetWorkspaceInfoProps {
+    workspaceId: string;
+}
+
+export const getWorkspaceInfo = async ({ workspaceId }: GetWorkspaceInfoProps) => {
+    try {
+        // 无需是member即可访问
+        const { databases } = await createSessionClient();
+
+        const workspace = await databases.getDocument<Workspace>(
+            DATABASE_ID,
+            WORKSPACES_ID,
+            workspaceId,
+        );
+
+        return {
+            name: workspace.name,
+        };
     } catch (error) {
         return null;
     }
