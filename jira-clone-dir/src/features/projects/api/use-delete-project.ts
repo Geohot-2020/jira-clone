@@ -30,10 +30,10 @@ import { client } from "@/lib/rpc";
 import { useRouter } from "next/navigation";
 
 
-type ResponseType = InferResponseType<typeof client.api.workspaces[":workspaceId"]["reset-invite-code"]["$post"], 200>;
-type RequestType = InferRequestType<typeof client.api.workspaces[":workspaceId"]["reset-invite-code"]["$post"]>;
+type ResponseType = InferResponseType<typeof client.api.projects[":projectId"]["$delete"], 200>;
+type RequestType = InferRequestType<typeof client.api.projects[":projectId"]["$delete"]>;
 
-export const useResetInviteCode = () => {
+export const useDeleteProject = () => {
     const router = useRouter();
     const queryClient = useQueryClient();
     
@@ -42,22 +42,23 @@ export const useResetInviteCode = () => {
         Error,
         RequestType
     >({
+        // 带上动态路由参数
         mutationFn: async ({ param }) => {
-            const response = await client.api.workspaces[":workspaceId"]["reset-invite-code"]["$post"]({ param });
+            const response = await client.api.projects[":projectId"]["$delete"]({ param });
             if (!response.ok) {
-                throw new Error("Failed to reset invite code");
+                throw new Error("Failed to delete project");
             }
             return await response.json();
         },
-        onSuccess: ({data}) => {
-            toast.success("Invite code reset");
+        onSuccess: ({ data }) => {
+            toast.success("Project deleted");
             router.refresh();
             //使与指定 queryKey 相关的所有查询失效
-            queryClient.invalidateQueries({queryKey: ["workspaces"]});
-            queryClient.invalidateQueries({queryKey: ["workspaces", data.$id]});
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+            queryClient.invalidateQueries({ queryKey: ["project", data.$id] });
         },
         onError: () => {
-            toast.error("Failed to reset invite code");
+            toast.error("Failed to delete a project");
         },
     });
 

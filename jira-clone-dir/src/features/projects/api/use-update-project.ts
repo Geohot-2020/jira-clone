@@ -30,10 +30,10 @@ import { client } from "@/lib/rpc";
 import { useRouter } from "next/navigation";
 
 
-type ResponseType = InferResponseType<typeof client.api.workspaces[":workspaceId"]["reset-invite-code"]["$post"], 200>;
-type RequestType = InferRequestType<typeof client.api.workspaces[":workspaceId"]["reset-invite-code"]["$post"]>;
+type ResponseType = InferResponseType<typeof client.api.projects[":projectId"]["$patch"], 200>;
+type RequestType = InferRequestType<typeof client.api.projects[":projectId"]["$patch"]>;
 
-export const useResetInviteCode = () => {
+export const useUpdateProject = () => {
     const router = useRouter();
     const queryClient = useQueryClient();
     
@@ -42,22 +42,23 @@ export const useResetInviteCode = () => {
         Error,
         RequestType
     >({
-        mutationFn: async ({ param }) => {
-            const response = await client.api.workspaces[":workspaceId"]["reset-invite-code"]["$post"]({ param });
+        // 带上动态路由参数
+        mutationFn: async ({ form, param }) => {
+            const response = await client.api.projects[":projectId"]["$patch"]({ form, param });
             if (!response.ok) {
-                throw new Error("Failed to reset invite code");
+                throw new Error("Failed to update project");
             }
             return await response.json();
         },
-        onSuccess: ({data}) => {
-            toast.success("Invite code reset");
+        onSuccess: ({ data }) => {
+            toast.success("Project updated");
             router.refresh();
             //使与指定 queryKey 相关的所有查询失效
-            queryClient.invalidateQueries({queryKey: ["workspaces"]});
-            queryClient.invalidateQueries({queryKey: ["workspaces", data.$id]});
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+            queryClient.invalidateQueries({ queryKey: ["project", data.$id] });
         },
         onError: () => {
-            toast.error("Failed to reset invite code");
+            toast.error("Failed to update a project");
         },
     });
 
