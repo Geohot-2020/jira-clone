@@ -14,6 +14,39 @@ import { Project } from "@/features/projects/types";
 
 
 const app = new Hono()
+    .delete(
+        "/:taskId",
+        sessionMiddleware,
+        async (c) => {
+            const user = c.get("user");
+            const databases = c.get("databases");
+            const { taskId } = c.req.param();
+
+            const task = await databases.getDocument<Task>(
+                DATABASE_ID,
+                TASKS_ID,
+                taskId,
+            );
+
+            const member = await getMember({
+                databases,
+                workspaceId: task.workspaceId,
+                userId: user.$id,
+            });
+
+            if (!member) {
+                return c.json({ error: "Unauthorized" }, 401);
+            }
+
+            await databases.deleteDocument(
+                DATABASE_ID,
+                TASKS_ID,
+                taskId,
+            );
+
+            return c.json({ data: { $id: task.$id } });
+        }
+    )
     .get(
         "/",
         sessionMiddleware,
@@ -39,7 +72,7 @@ const app = new Hono()
                 status,
                 search,
                 assigneeId,
-                dueDate,             
+                dueDate,
             } = c.req.valid("query");
 
             const member = await getMember({
@@ -57,27 +90,27 @@ const app = new Hono()
                 Query.orderDesc("$createdAt"),
             ];
 
-            if(projectId) {
+            if (projectId) {
                 console.log("projectId:", projectId);
                 query.push(Query.equal("projectId", projectId));
             }
 
-            if(status) {
+            if (status) {
                 console.log("status:", status);
                 query.push(Query.equal("status", status));
             }
 
-            if(assigneeId) {
+            if (assigneeId) {
                 console.log("assigneeId:", assigneeId);
                 query.push(Query.equal("assigneeId", assigneeId));
             }
 
-            if(dueDate) {
+            if (dueDate) {
                 console.log("dueDate:", dueDate);
                 query.push(Query.equal("dueDate", dueDate));
             }
 
-            if(search) {
+            if (search) {
                 console.log("search:", search);
                 query.push(Query.search("name", search));
             }
@@ -96,14 +129,14 @@ const app = new Hono()
             const projects = await databases.listDocuments<Project>(
                 DATABASE_ID,
                 PROJECTS_ID,
-                projectIds.length > 0 ? [Query.contains("$id", projectIds)] : [],            
+                projectIds.length > 0 ? [Query.contains("$id", projectIds)] : [],
             );
 
             //从指定的数据库查询成员文档列表
             const members = await databases.listDocuments(
                 DATABASE_ID,
                 MEMBERS_ID,
-                assigneeIds.length > 0 ? [Query.contains("$id", assigneeIds)] : [],            
+                assigneeIds.length > 0 ? [Query.contains("$id", assigneeIds)] : [],
             );
 
             //基于查询到的成员文档中的用户 ID 去获取对应的用户详细信息
@@ -202,6 +235,114 @@ const app = new Hono()
             );
 
             return c.json({ data: task });
+        }
+    )
+    .patch(
+        "/:taskId",
+        sessionMiddleware,
+        zValidator("json", createTaskSchema.partial()),
+        async (c) => {
+            const user = c.get("user");
+            const databases = c.get("databases");
+            const {
+                name,
+                status,
+                description,
+                projectId,
+                dueDate,
+                assigneeId,
+            } = c.req.valid("json");
+
+            const { taskId } = c.req.param();
+
+            // 得到一个Task类型的对象
+            const existingTask = await databases.getDocument<Task>(
+                DATABASE_ID,
+                TASKS_ID,
+                taskId,
+            );
+
+            const member = await getMember({
+                databases,
+                workspaceId: existingTask.workspaceId,
+                userId: user.$id,
+            });
+
+            if (!member) {
+                return c.json({ error: "Unauthorized" }, 401);
+            }
+
+            const task = await databases.updateDocument(
+                DATABASE_ID,
+                TASKS_ID,
+                taskId,
+                {
+                    name,
+                    status,
+                    projectId,
+                    dueDate,
+                    assigneeId,
+                    description,
+                },
+            );
+
+            return c.json({ data: task });
+        }
+    )
+    .get(
+        "/:taskId",
+        sessionMiddleware,
+        async (c) => {
+            const currentUser = c.get("user");
+            const databases = c.get("databases");
+            const { users } = await createAdminClient();
+            const { taskId } = c.req.param();
+
+            const task = await databases.getDocument<Task>(
+                DATABASE_ID,
+                TASKS_ID,
+                taskId,
+            );
+
+            const currentMember = await getMember({
+                databases,
+                workspaceId: task.workspaceId,
+                userId: currentUser.$id,
+            });
+
+            if (!currentMember) {
+                return c.json({error: "Unauthorized"}, 401);
+            }
+
+            const project = await databases.getDocument<Project>(
+                DATABASE_ID,
+                PROJECTS_ID,
+                task.projectId,
+            );
+
+            const member = await databases.getDocument(
+                DATABASE_ID,
+                MEMBERS_ID,
+                task.assigneeId,
+            );
+
+            const user = await users.get(member.userId);
+
+            // 添加覆盖属性
+            const assignee = {
+                ...member,
+                name: user.name,
+                email: user.email,
+            };
+
+            // JSON格式返回给客户端
+            return c.json({
+                data: {
+                    ...task,
+                    project,
+                    assignee,
+                },
+            });
         }
     );
 
