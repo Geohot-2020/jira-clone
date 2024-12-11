@@ -17,6 +17,7 @@ import { columns } from "./columns";
 import { DataKanban } from "./data-kanban";
 import { TaskStatus } from "../types";
 import { useBulkUpdateTasks } from "../api/use-bulk-update-tasks";
+import { DataCalendar } from "./data-calendar";
 
 
 export const TaskViewSwitcher = () => {
@@ -113,7 +114,7 @@ export const TaskViewSwitcher = () => {
                             <DataKanban onChange={onKanbanChange} data={tasks?.documents ?? []} />
                         </TabsContent>
                         <TabsContent value="calendar" className="mt-0">
-
+                            <DataCalendar data={tasks?.documents ?? []}/>
                         </TabsContent>
                     </>
                 )}
