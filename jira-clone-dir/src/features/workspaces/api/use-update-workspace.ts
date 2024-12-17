@@ -41,7 +41,6 @@ export const useUpdateWorkspaces = () => {
         },
         onSuccess: ({ data }) => {
             toast.success("Workspace updated");
-            router.refresh();
             //使与指定 queryKey 相关的所有查询失效
             queryClient.invalidateQueries({ queryKey: ["workspaces"] });
             queryClient.invalidateQueries({ queryKey: ["workspaces", data.$id] });

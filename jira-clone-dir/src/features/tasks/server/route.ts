@@ -272,7 +272,7 @@ const app = new Hono()
                 return c.json({ error: "Unauthorized" }, 401);
             }
 
-            const task = await databases.updateDocument(
+            const task = await databases.updateDocument<Task>(
                 DATABASE_ID,
                 TASKS_ID,
                 taskId,

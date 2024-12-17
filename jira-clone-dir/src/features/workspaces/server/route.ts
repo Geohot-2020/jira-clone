@@ -37,33 +37,87 @@ import { Workspace } from "../types";
  * @returns {Promise<Response>} 包含更新后工作区的响应。
  */
 const app = new Hono()
-    .get("/", sessionMiddleware, async (c) => {
-        const user = c.get("user");
-        const databases = c.get("databases");
+    .get(
+        "/",
+        sessionMiddleware,
+        async (c) => {
+            const user = c.get("user");
+            const databases = c.get("databases");
 
-        const members = await databases.listDocuments(
-            DATABASE_ID,
-            MEMBERS_ID,
-            [Query.equal("userId", user.$id)]
-        );
+            const members = await databases.listDocuments(
+                DATABASE_ID,
+                MEMBERS_ID,
+                [Query.equal("userId", user.$id)]
+            );
 
-        if (members.total === 0) {
-            return c.json({ data: { documents: [], total: 0 } });
+            if (members.total === 0) {
+                return c.json({ data: { documents: [], total: 0 } });
+            }
+
+            const workspaceIds = members.documents.map((member) => member.workspaceId);
+
+            const workspaces = await databases.listDocuments(
+                DATABASE_ID,
+                WORKSPACES_ID,
+                [
+                    Query.orderDesc("$createdAt"),
+                    Query.contains("$id", workspaceIds),
+                ]
+            );
+
+            return c.json({ data: workspaces });
         }
+    )
+    .get(
+        "/:workspaceId",
+        sessionMiddleware,
+        async (c) => {
+            const user = c.get("user");
+            const databases = c.get("databases");
+            const { workspaceId } = c.req.param();
 
-        const workspaceIds = members.documents.map((member) => member.workspaceId);
+            const member = await getMember({
+                databases,
+                workspaceId,
+                userId: user.$id,
+            });
 
-        const workspaces = await databases.listDocuments(
-            DATABASE_ID,
-            WORKSPACES_ID,
-            [
-                Query.orderDesc("$createdAt"),
-                Query.contains("$id", workspaceIds),
-            ]
-        );
+            if (!member) {
+                return c.json({ error: "Unauthorized" }, 401);
+            }
 
-        return c.json({ data: workspaces });
-    })
+            const workspace = await databases.getDocument<Workspace>(
+                DATABASE_ID,
+                WORKSPACES_ID,
+                workspaceId,
+            );
+
+            return c.json({ data: workspace });
+        }
+    )
+    .get(
+        "/:workspaceId/info",
+        sessionMiddleware,
+        async (c) => {
+            const databases = c.get("databases");
+            const { workspaceId } = c.req.param();
+
+
+            const workspace = await databases.getDocument<Workspace>(
+                DATABASE_ID,
+                WORKSPACES_ID,
+                workspaceId,
+            );
+
+            return c.json({
+                data: {
+                    $id: workspace.$id,
+                    name: workspace.name,
+                    imageUrl: workspace.imageUrl,
+                }
+            });
+        }
+    )
     .post(
         "/",    // / => /workspaces 
         zValidator("form", createWorkspacesSchema),

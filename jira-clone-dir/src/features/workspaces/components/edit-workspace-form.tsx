@@ -106,10 +106,6 @@ export const EditWorkspaceFrom = ({ onCancel, initialValues }: EditWorkspaceFrom
         mutate({
             form: finalValues,
             param: { workspaceId: initialValues.$id },
-        }, {
-            onSuccess: () => {
-                form.reset();
-            }
         });
     };
 
