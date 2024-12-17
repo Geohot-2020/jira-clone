@@ -19,8 +19,13 @@ import { TaskStatus } from "../types";
 import { useBulkUpdateTasks } from "../api/use-bulk-update-tasks";
 import { DataCalendar } from "./data-calendar";
 
+interface TaskViewSwitcherProps {
+    hideProjectFilter?: boolean;
+};
 
-export const TaskViewSwitcher = () => {
+export const TaskViewSwitcher = ({
+    hideProjectFilter
+}: TaskViewSwitcherProps) => {
     const [{
         status,
         assigneeId,
@@ -99,7 +104,7 @@ export const TaskViewSwitcher = () => {
                     </Button>
                 </div>
                 <DottedSeparator className="my-4" />
-                <DataFilters />
+                <DataFilters hideProjectFilter={hideProjectFilter} />
                 <DottedSeparator className="my-4" />
                 {isLoadingTasks ? (
                     <div className="w-full border rounded-lg h-[200px] flex flex-col items-center justify-center">
@@ -114,7 +119,7 @@ export const TaskViewSwitcher = () => {
                             <DataKanban onChange={onKanbanChange} data={tasks?.documents ?? []} />
                         </TabsContent>
                         <TabsContent value="calendar" className="mt-0">
-                            <DataCalendar data={tasks?.documents ?? []}/>
+                            <DataCalendar data={tasks?.documents ?? []} />
                         </TabsContent>
                     </>
                 )}
