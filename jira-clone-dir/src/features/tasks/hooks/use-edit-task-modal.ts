@@ -1,4 +1,4 @@
-import { useQueryState, parseAsBoolean, parseAsString } from "nuqs";
+import { useQueryState } from "nuqs";
 
 /**
  * 自定义 Hook，用于管理编辑任务模态框的状态。
@@ -12,14 +12,13 @@ import { useQueryState, parseAsBoolean, parseAsString } from "nuqs";
 export const useEditTaskModal = () => {
     const [taskId, setTaskId] = useQueryState(
         "edit-task",
-        parseAsString,
     );
 
     const open = (id: string) => setTaskId(id);
     const close = () => setTaskId(null);
 
     return {
-        taskId, 
+        taskId,
         open,
         close,
         setTaskId,

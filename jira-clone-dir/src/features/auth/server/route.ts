@@ -8,7 +8,6 @@
  * 这些路由使用 Zod 进行模式验证，并使用 Appwrite 进行用户管理。
  */
 
-import { z } from "zod"
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { loginSchema, registerSchema } from "../schemas";

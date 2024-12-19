@@ -20,6 +20,8 @@ import tasks from "@/features/tasks/server/route"
 
 const app = new Hono().basePath("/api");
 
+// 禁用 ESLint 对未使用变量的检查
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const routes = app
     .route("/auth", auth)
     .route("/workspaces", workspaces)

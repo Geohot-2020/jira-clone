@@ -379,7 +379,7 @@ const app = new Hono()
             }
 
             // 提取第一个工作区 ID
-            const workspaceId = workspaceIds.values().next().value;
+            const workspaceId = workspaceIds.values().next().value as string;
 
             const member = await getMember({
                 databases,
