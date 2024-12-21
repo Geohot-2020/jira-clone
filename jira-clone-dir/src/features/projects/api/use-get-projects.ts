@@ -5,7 +5,6 @@ import { client } from "@/lib/rpc";
 
 interface UseGetProjectsProps {
     workspaceId: string;
-
 }
 
 export const useGetProjects = ({ 

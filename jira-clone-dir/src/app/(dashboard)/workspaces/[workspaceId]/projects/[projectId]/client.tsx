@@ -1,7 +1,9 @@
 "use client";
 import { PencilIcon } from "lucide-react";
 import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
+
 import { ProjectAvatar } from "@/features/projects/components/project-avatar";
 import { TaskViewSwitcher } from "@/features/tasks/components/task-view-switcher";
 import { useProjectId } from "@/features/projects/hooks/use-project-id";

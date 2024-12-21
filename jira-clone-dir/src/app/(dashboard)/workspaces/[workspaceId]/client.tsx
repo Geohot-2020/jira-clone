@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { Analytics } from "@/components/analytics";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { PageError } from "@/components/page-error";
@@ -20,7 +20,7 @@ import { UseGetWorkspaceAnalytics } from "@/features/workspaces/api/use-get-work
 import { useWorkspaceId } from "@/features/workspaces/hooks/use-workspace-id";
 import { formatDistanceToNow } from "date-fns";
 import { CalendarIcon, PlusIcon, Settings } from "lucide-react";
-import Link from "next/link";
+
 
 export const WorkspaceIdClient = () => {
     const workspaceId = useWorkspaceId();

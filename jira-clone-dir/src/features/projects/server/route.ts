@@ -1,10 +1,12 @@
-import { DATABASE_ID, IMAGES_BUCKET_ID, PROJECTS_ID, TASKS_ID } from "@/config";
-import { getMember } from "@/features/members/utils";
-import { sessionMiddleware } from "@/lib/session-middleware";
-import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
 import { Hono } from "hono";
 import { ID, Query } from "node-appwrite";
-import { z } from "zod";
+import { zValidator } from "@hono/zod-validator";
+import { sessionMiddleware } from "@/lib/session-middleware";
+
+import { DATABASE_ID, IMAGES_BUCKET_ID, PROJECTS_ID, TASKS_ID } from "@/config";
+import { getMember } from "@/features/members/utils";
+
 import { createProjectSchema, updateProjectSchema } from "../schemas";
 import { Project } from "../types";
 import { endOfMonth, startOfMonth, subMonths } from "date-fns";
@@ -60,8 +62,6 @@ const app = new Hono()
                 },
             );
 
-
-
             return c.json({ data: project });
         }
     )
@@ -94,7 +94,6 @@ const app = new Hono()
                 [
                     Query.equal("workspaceId", workspaceId),
                     Query.orderDesc("$createdAt"),
-
                 ],
             );
 

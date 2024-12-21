@@ -9,12 +9,10 @@
  * @typedef {InferResponseType<typeof client.api.auth.login["$post"]>} ResponseType - 登录端点响应的类型。
  * @typedef {InferRequestType<typeof client.api.auth.login["$post"]>["json"]} RequestType - 登录端点请求负载的类型。
  */
-
+import { client } from "@/lib/rpc";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
-
-import { client } from "@/lib/rpc";
 import { useRouter } from "next/navigation";
 
 type ResponseType = InferResponseType<typeof client.api.auth.login["$post"]>;
