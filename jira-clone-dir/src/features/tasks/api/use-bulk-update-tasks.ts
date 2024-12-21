@@ -49,6 +49,8 @@ export const useBulkUpdateTasks = () => {
             toast.success("Tasks updated");
 
             //使与指定 queryKey 相关的所有查询失效
+            queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            queryClient.invalidateQueries({ queryKey: ["workspace-analytics"] });   
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
         },
         onError: () => {

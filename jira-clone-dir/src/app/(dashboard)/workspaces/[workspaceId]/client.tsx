@@ -105,7 +105,7 @@ export const TaskList = ({ data, total }: TaskListProps) => {
                             </Card>
                         </li>
                     ))}
-                    <li className="text-sm text-muted-foreground text-center hidden first-of-type:block">
+                    <li className="text-sm text-muted-foreground text-left hidden first-of-type:block">
                         No tasks found
                     </li>
                 </ul>
@@ -159,7 +159,7 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
                             </Card>
                         </li>
                     ))}
-                    <li className="text-sm text-muted-foreground text-center hidden first-of-type:block">
+                    <li className="text-sm text-muted-foreground text-left hidden first-of-type:block">
                         No projects found
                     </li>
                 </ul>

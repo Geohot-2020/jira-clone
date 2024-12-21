@@ -50,6 +50,8 @@ export const useCreateTask = () => {
         onSuccess: () => {
             toast.success("Task created");
             //使与指定 queryKey 相关的所有查询失效
+            queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            queryClient.invalidateQueries({ queryKey: ["workspace-analytics"] });
             queryClient.invalidateQueries({queryKey: ["tasks"]});
         },
         onError: () => {

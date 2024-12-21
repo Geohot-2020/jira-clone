@@ -26,6 +26,8 @@ export const useUpdateTask = () => {
         },
         onSuccess: ({ data }) => {
             toast.success("Task updated");
+            queryClient.invalidateQueries({ queryKey: ["project-analytics"] });
+            queryClient.invalidateQueries({ queryKey: ["workspace-analytics"] });
             //使与指定 queryKey 相关的所有查询失效
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             // 缓存失效的 key 也应该使用相同的命名
